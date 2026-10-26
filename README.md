@@ -36,15 +36,20 @@ circuits/membership.circom is the membership circuit. Poseidon Merkle tree, dept
     snarkjs groth16 setup circuits/build/membership.r1cs pot_final.ptau membership.zkey
     snarkjs zkey export verificationkey membership.zkey verification_key.json
 
-verification_key.json becomes the constructor argument vk. Encode each point uncompressed big-endian: G1 is 64 bytes (x, y), G2 is 128 bytes. Check the G2 coordinate order against the soroban-sdk bn254 docs before deploying.
+verification_key.json becomes the constructor argument vk. You can deploy with a placeholder key first and swap in the real one later with set_vk. Encode each point uncompressed big-endian (Ethereum format, per the soroban-sdk 29 docs). G1 is 64 bytes: x || y. G2 is 128 bytes: x.c1 || x.c0 || y.c1 || y.c0. snarkjs writes each G2 coordinate as [c0, c1], so swap the two halves. Drop the third coordinate snarkjs adds to every point (it is always 1).
 
 ## Deploy to testnet
+
+Live on testnet: CDP3UFFH6PG5BICR4VKRTVG4LULNLOSLQYJ5KAZ2NRO536HH5SC7JXVR
+https://stellar.expert/explorer/testnet/contract/CDP3UFFH6PG5BICR4VKRTVG4LULNLOSLQYJ5KAZ2NRO536HH5SC7JXVR
+
+First creator registered: https://stellar.expert/explorer/testnet/tx/cb166f0aeb7a60a4a2fbd5437b0b0c7a88dcc815e3b7ab3e5755b68281692d8f
 
     stellar keys generate creator --network testnet --fund
     stellar contract deploy \
       --wasm target/wasm32v1-none/release/backstage.wasm \
       --source creator --network testnet \
-      -- --usdc <USDC_CONTRACT_ID> --vk "$(cat vk.json)"
+      -- --admin creator --usdc <USDC_CONTRACT_ID> --vk "$(cat vk.json)"
 
 ## Flow
 

@@ -44,7 +44,8 @@ fn setup<'a>() -> Setup<'a> {
     let fan = Address::generate(&env);
     StellarAssetClient::new(&env, &usdc_addr).mint(&fan, &1_000_0000000);
 
-    let id = env.register(Backstage, (usdc_addr.clone(), dummy_vk(&env)));
+    let admin = Address::generate(&env);
+    let id = env.register(Backstage, (admin, usdc_addr.clone(), dummy_vk(&env)));
     let client = BackstageClient::new(&env, &id);
     let usdc = TokenClient::new(&env, &usdc_addr);
     Setup { env, client, usdc, creator, fan }
@@ -94,4 +95,10 @@ fn donations_reach_creator() {
     s.client.close_campaign(&id);
     let r = s.client.try_donate(&s.fan, &id, &1);
     assert_eq!(r, Err(Ok(Error::CampaignClosed)));
+}
+
+#[test]
+fn admin_can_replace_vk() {
+    let s = setup();
+    s.client.set_vk(&dummy_vk(&s.env));
 }

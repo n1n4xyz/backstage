@@ -55,6 +55,7 @@ pub struct Campaign {
 
 #[contracttype]
 enum DataKey {
+    Admin,
     Usdc,
     Vk,
     Creator(Address),
@@ -100,9 +101,19 @@ pub struct Backstage;
 #[contractimpl]
 impl Backstage {
     /// `usdc` is the USDC token contract. `vk` is the verification key of
-    /// circuits/membership.circom and is fixed at deploy time.
-    pub fn __constructor(env: Env, usdc: Address, vk: VerificationKey) {
+    /// circuits/membership.circom. `admin` can replace the key later, so the
+    /// contract can go live with a placeholder key before the circuit setup
+    /// is done.
+    pub fn __constructor(env: Env, admin: Address, usdc: Address, vk: VerificationKey) {
+        env.storage().instance().set(&DataKey::Admin, &admin);
         env.storage().instance().set(&DataKey::Usdc, &usdc);
+        env.storage().instance().set(&DataKey::Vk, &vk);
+    }
+
+    /// Replace the verification key. Admin only.
+    pub fn set_vk(env: Env, vk: VerificationKey) {
+        let admin: Address = env.storage().instance().get(&DataKey::Admin).unwrap();
+        admin.require_auth();
         env.storage().instance().set(&DataKey::Vk, &vk);
     }
 
