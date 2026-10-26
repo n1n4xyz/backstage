@@ -1,0 +1,22 @@
+# build output
+target/
+test_snapshots/
+circuits/build/
+node_modules/
+
+# Stellar CLI config and keys
+.stellar/
+.soroban/
+
+# ZK setup and secrets
+*.ptau
+*.zkey
+*.wtns
+input.json
+
+# local env
+.env
+.env.*
+
+# Mac
+.DS_Store
