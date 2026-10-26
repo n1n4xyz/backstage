@@ -2,6 +2,8 @@
 
 Private fan support for creators on Stellar. Fans pay in USDC. Creators keep their income without a platform in the middle.
 
+![alt text](4AA92A7B-D310-478D-B57F-B2CC25087895.png)
+
 ## What is in this repo
 
 contracts/backstage is a Soroban contract with four parts.
